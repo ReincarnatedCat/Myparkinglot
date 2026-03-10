@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: hsl(274, 79%, 82%);
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+canvas {
+  border: 2px solid #fff;
+  margin-top: 20px;
+}
+
+button {
+  width: 60px;
+  height: 60px;
+  background-color: rgb(174, 241, 180);
+  vertical-align: top;
+}
+

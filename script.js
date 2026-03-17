@@ -1,24 +1,31 @@
-const newNumbers = document.getElementById("new-numbers");
-const tiles = document.getElementById("tiles-container");
-let x = 4;
+const options = document.getElementById("options");
+const tileContainer = document.getElementById("tiles-container");
+const scoreCounter = document.getElementById("score-counter")
+let x = 5;
 const size = x;
 
 
-let buttons = []
+let tiles = [];
+let maxNum = 5;
+scoreCounter.innerText = 0;
 
-let num = [" ", " ", " "]
+let num = [Math.floor(Math.random() * maxNum), Math.floor(Math.random() * maxNum), Math.floor(Math.random() * maxNum)];
 
 
-function replaceNumbers() {
-    newNumbers.innerText = String(num).replaceAll(",", "  ")
-}
 
-let nextNumber = " "
 
-function changeNumbers () {
-     nextNumber = num.pop();
-     let randomNumber = Math.floor(Math.random() * 10);
-     num.unshift(randomNumber)
+
+
+function replaceOptions() {
+    options.innerText = String(num).replaceAll(",", "  ")
+};
+
+let nextOption = " ";
+
+function updateOptions () {
+     nextOption = num.pop();
+     let randomOption = Math.floor(Math.random() * maxNum);
+     num.unshift(randomOption)
 
 }
 
@@ -27,7 +34,7 @@ function tileGenerator () {
 
     for (let i = 0; i < size ; i++) {
         let row = document.createElement("div");
-        tiles.appendChild(row);
+        tileContainer.appendChild(row);
         for (let i = 0; i < size ; i++) {
 
             let btn = document.createElement("button");
@@ -35,7 +42,7 @@ function tileGenerator () {
         
             row.appendChild(btn);
             btn.addEventListener("click", onClick);
-            buttons.push(btn)
+            tiles.push(btn)
 
             }
     } ;
@@ -44,14 +51,22 @@ function tileGenerator () {
 
 function getNeighboringtiles (index) {
     let neighboringtiles = [];
-    if (![x,2*x,3*x].includes(index)) {
-    neighboringtiles.push(buttons[index-1]);
+    let leftcolumn = [];
+    let rightcolumn = [];
+    for (let i=1; i < x; i++) {
+       leftcolumn.push(x*i);
+       rightcolumn.push(x*i-1);
+    };
+    if (!leftcolumn.includes(index)) {
+    neighboringtiles.push(tiles[index-1]);
     }
-        if (![x-1,2*x-1,3*x-1].includes(index)) {
-    neighboringtiles.push(buttons[index+1]);
+        if (!rightcolumn.includes(index)) {
+    neighboringtiles.push(tiles[index+1]);
     }
-    neighboringtiles.push(buttons[index-x]);
-    neighboringtiles.push(buttons[index+x]);
+    neighboringtiles.push(tiles[index-x]);
+    neighboringtiles.push(tiles[index+x]);
+    console.log(leftcolumn);
+    console.log(rightcolumn);
     console.log(neighboringtiles);
     return neighboringtiles
     
@@ -61,40 +76,92 @@ function getNeighboringtiles (index) {
 
 
 
-function checkNeighboringtiles (index) {
-    let neighboringtiles = getNeighboringTiles(index);
-    for (let tile of neighboringtiles) {
+function checkNeighboringtiles(index) {
+    let mergableTiles = [];
+    for (let tile of getNeighboringtiles(index)) {
         if (typeof tile == "undefined"){
             continue
         }
-        if(tile.innerText == buttons[index].innerText) {
-            buttons[index].innerText = nextNumber + 1;
+        if(tile.innerText == 10){
+            continue
         }
-
-
+        if(tile.innerText == tiles[index].innerText) {
+            mergableTiles.push(tile);   
+        }
+ 
+    }
+    if(mergableTiles.length !== 0) {
+        mergeTiles(mergableTiles, index);
+        checkNeighboringtiles(index);
     }
 }
+
+
+function mergeTiles(mergableTiles, index) {
+            tiles[index].innerText = parseInt(tiles[index].innerText) + 1;
+            for (let mergableTile of mergableTiles){
+                mergableTile.innerText = "";
+                addScore(parseInt(tiles[index].innerText));
+            }
+
+}
+
+function addScore(value) {
+    scoreCounter.innerText = parseInt(scoreCounter.innerText) + value*2;
+
+}
+
+
+
+
+
+function gameReset() {
+    for(let tile of tiles) {
+        tile.innerText = "";
+    }
+}
+
+function checkGameover() {
+    for (let tile of tiles) {
+        if (tile.innerText == "") {
+          return  
+        }
+        
+    }
+
+    gameReset();
+}
+
+
 
 
 function onClick () {
-    console.log(buttons.indexOf(this));
+    console.log(tiles.indexOf(this));
     if (!this.innerText == "") {
         return
     }
-        changeNumbers();
-        replaceNumbers();
-        this.innerText = nextNumber;
-        checkNeighboringtiles(buttons.indexOf(this));        
+        updateOptions();
+        replaceOptions();
+        this.innerText = nextOption;
+        checkNeighboringtiles(tiles.indexOf(this));  
+        checkGameover();      
 }
 
 
-replaceNumbers();
+replaceOptions();
 tileGenerator();
-console.log(buttons);
+console.log(tiles);
 
 
-//1. calculate the neighbor tiles.
-//2. store them 
-//3. check if they are of the same value as "this".
-//4. if so, merge them. replace "this" with the new value, and purge the merged tile(s).
-//5. display the orginal value before merging. 
+//!1. calculate the neighbor tiles.
+//!2. store them 
+//!3. check if they are of the same value as "this".
+//!4. if so, merge them. replace "this" with the new value, and purge the merged tile(s).
+//!5. display the orginal value before merging. 
+//!5. clean up code
+//!6. set caps for the numbers. 
+//7. gameover screen
+//8. create record tracking function, display current score and all time high score.
+//9. reset game
+//!10. figure out how to check if there are neighboring tiles that can be merged, since the merge only happened once.
+//!11. If there are multiple neighboring tiles that hold the same value, all of them need to be merged. 

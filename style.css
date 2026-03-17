@@ -21,5 +21,20 @@ button {
   height: 60px;
   background-color: rgb(174, 241, 180);
   vertical-align: top;
+  color: rgb(101, 128, 218);
+  font-size: 24px;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-weight: bold;
+
 }
 
+
+.score {
+  display: flex;          /* Container becomes flex */
+  gap: 20px;    
+  justify-content: center;          /* Space between h1s */
+}
+
+.score h1 {
+  margin: 0;              /* Remove default margins */
+}
